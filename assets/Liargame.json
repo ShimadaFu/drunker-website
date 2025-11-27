@@ -1,0 +1,168 @@
+[
+    {
+        "id": "_meta",
+        "name": "LiarGame",
+        "description": "",
+        "author": "小付",
+        "logo": "https://i.postimg.cc/DZqK2wHY/image.png",
+        "state": []
+    },
+    {
+        "id": "investigator"
+    },
+    {
+        "id": "empath"
+    },
+    {
+        "id": "chambermaid"
+    },
+    {
+        "id": "gambler"
+    },
+    {
+        "id": "gossip"
+    },
+    {
+        "id": "clockmaker"
+    },
+    {
+        "id": "flowergirl"
+    },
+    {
+        "id": "king"
+    },
+    {
+        "id": "atheist"
+    },
+    {
+        "id": "alsaahir"
+    },
+    {
+        "id": "daoshi"
+    },
+    {
+        "id": "fengshuishi"
+    },
+    {
+        "id": "zhifu"
+    },
+    {
+        "id": "saint"
+    },
+    {
+        "id": "lunatic"
+    },
+    {
+        "id": "hermit"
+    },
+    {
+        "id": "jiubao"
+    },
+    {
+        "id": "pit-hag"
+    },
+    {
+        "id": "goblin"
+    },
+    {
+        "id": "widow"
+    },
+    {
+        "id": "boffin"
+    },
+    {
+        "id": "fang_gu"
+    },
+    {
+        "id": "taotie"
+    },
+    {
+        "id": "diyRole1",
+        "name": "观察者",
+        "ability": "每局游戏限一次，在夜晚时*，你可以选择一名死亡玩家：如果他是善良的，你获得他的能力；如果他是邪恶的，你中毒。",
+        "team": "townsfolk",
+        "sch_team": "镇民",
+        "firstNight": "",
+        "otherNight": "401",
+        "firstNightReminder": "",
+        "otherNightReminder": "选择一个玩家，获得能力。类似主动限一次的食人族。",
+        "reminders": [
+            "已发动技能",
+            "中毒"
+        ],
+        "remindersGlobal": [
+            "是观察者"
+        ],
+        "setup": 0,
+        "image": "https://i.postimg.cc/tCF9X2Q4/image.png"
+    },
+    {
+        "id": "diyRole2",
+        "name": "腐蚀者",
+        "ability": "在你的首个夜晚，选择一名玩家，他可能被当做邪恶阵营和恶魔，即使他已死亡。\n如果他是唯一存活的善良玩家，他转变为邪恶阵营（但他不知道）。",
+        "team": "minion",
+        "sch_team": "爪牙",
+        "firstNight": "4701",
+        "otherNight": "",
+        "firstNightReminder": "选择",
+        "otherNightReminder": "",
+        "reminders": [
+            "被腐蚀",
+            "邪恶"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/7hTQnsMG/by.png"
+    },
+    {
+        "id": "diyRole3",
+        "name": "检察官",
+        "ability": "如果你在白天发起过提名，当晚，你会得知一名与被提名者相同阵营的玩家。",
+        "team": "townsfolk",
+        "sch_team": "镇民",
+        "firstNight": "",
+        "otherNight": "10499",
+        "firstNightReminder": "",
+        "otherNightReminder": "得知",
+        "reminders": [
+            "提名",
+            "被查验"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/tCF9X2Q4/image.png"
+    },
+    {
+        "id": "diyRole4",
+        "name": "少数决",
+        "ability": "游戏的最后一天，改为得票最少的玩家被处决。",
+        "team": "fabled",
+        "sch_team": "传奇角色",
+        "firstNight": "",
+        "otherNight": "",
+        "firstNightReminder": "",
+        "otherNightReminder": "",
+        "reminders": [],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/RFvgHCqY/Y.png"
+    },
+    {
+        "id": "diyRole5",
+        "name": "谈判室",
+        "ability": "两名玩家可以自愿向说书人发起秘密交易。说书人受理后生效。违反交易的玩家会有不好的事情发生。\n每局每名玩家限一次，恶魔不会因此受到惩罚。",
+        "team": "fabled",
+        "sch_team": "传奇角色",
+        "firstNight": "",
+        "otherNight": "",
+        "firstNightReminder": "",
+        "otherNightReminder": "",
+        "reminders": [
+            "谈判",
+            "惩罚"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/sDMwSND3/image.png"
+    }
+]
