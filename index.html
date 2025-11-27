@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drunker - 醉语钟楼</title>
+    <!-- 引入 Tailwind CSS (样式库) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- 引入 Babel (让浏览器能读懂 React 代码) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* Apple 风格字体栈 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+            background-color: #000000; /* 更深邃的黑，配合 Apple 暗黑模式 */
+            color: #f5f5f7; /* Apple 风格的近白文字 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* 自定义动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- 模拟图标组件 (SVG) ---
+        const Icons = {
+            Ghost: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 22v-2"/><path d="M9 12a4 4 0 1 1 8 0v10"/><path d="M5 22v-2"/><path d="M5 12a8 8 0 0 1 16 0v10"/></svg>,
+            Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
+            Star: ({ fill, className, size=20 }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill={fill || "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+            PlusCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>,
+            User: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Clock: () => <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+            ArrowLeft: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>,
+            FileJson: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>,
+            Image: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
+            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        };
+
+        // --- 模拟数据 (Mock Data) ---
+        const MOCK_SCRIPTS = [
+            {
+                id: '1',
+                title: '暗流涌动 (Trouble Brewing)',
+                author: 'The Pandemonium Institute',
+                frontImgUrl: 'https://img.zcool.cn/community/01f09c5d1b11aca80121483788f47c.jpg@1280w_1l_2o_100sh.jpg',
+                backImgUrl: 'https://placehold.co/600x400/2a1b3d/e2e8f0?text=Back+Sheet',
+                jsonContent: '[{"id": "washerwoman"}]',
+                ratingSum: 45,
+                ratingCount: 10,
+                updatedAt: new Date()
+            },
+            {
+                id: '2',
+                title: '紫罗兰教派 (Sects & Violets)',
+                author: '官方',
+                frontImgUrl: 'https://placehold.co/600x400/1c1c1e/e2e8f0?text=Sects+Violets',
+                backImgUrl: 'https://placehold.co/600x400/1c1c1e/e2e8f0?text=Back',
+                jsonContent: '[]',
+                ratingSum: 18,
+                ratingCount: 4,
+                updatedAt: new Date()
+            }
+        ];
+
+        // --- 主程序 ---
+        function App() {
+            const [view, setView] = useState('home'); 
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [scripts, setScripts] = useState(MOCK_SCRIPTS);
+            const [selectedScript, setSelectedScript] = useState(null);
+            const [searchQuery, setSearchQuery] = useState('');
+
+            // 搜索过滤
+            const filteredScripts = scripts.filter(s => 
+                s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                s.author.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            // 路由处理
+            const goHome = () => { setView('home'); setSelectedScript(null); };
+            const goToDetails = (script) => { setSelectedScript(script); setView('details'); };
+
+            // 模拟上传
+            const handleUploadScript = (newScript) => {
+                const scriptWithId = {
+                    ...newScript,
+                    id: Date.now().toString(),
+                    ratingSum: 0,
+                    ratingCount: 0,
+                    updatedAt: new Date()
+                };
+                setScripts([scriptWithId, ...scripts]);
+                alert("上传成功 (本地演示模式)");
+                goHome();
+            };
+
+            return (
+                <div className="min-h-screen bg-black text-[#f5f5f7] pb-12">
+                    {/* 导航栏 - 增加高斯模糊和透明度 */}
+                    <nav className="fixed top-0 w-full z-50 backdrop-blur-xl bg-black/70 border-b border-white/5 transition-all duration-300">
+                        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                            <div className="flex items-center gap-3 cursor-pointer group" onClick={goHome}>
+                                <div className="p-2 rounded-full bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                                    <Icons.Ghost />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-xl tracking-tight text-white">Drunker</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <button onClick={() => setIsAdmin(!isAdmin)} className={`text-xs px-3 py-1.5 rounded-full border transition-all ${isAdmin ? 'border-red-500 text-red-400 bg-red-500/10' : 'border-neutral-700 text-neutral-400 hover:text-white'}`}>
+                                    {isAdmin ? '管理员' : '访客'}
+                                </button>
+                                {isAdmin && (
+                                    <button onClick={() => setView('upload')} className="bg-white text-black hover:bg-neutral-200 px-4 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-semibold transition-colors shadow-lg shadow-white/10">
+                                        <Icons.PlusCircle /> <span className="hidden sm:inline">上传剧本</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* 顶部占位，防止内容被导航栏遮挡 */}
+                    <div className="h-20"></div>
+
+                    {/* 主内容区 */}
+                    <main className="max-w-7xl mx-auto px-6 py-8">
+                        {view === 'home' && (
+                            <div className="animate-fadeIn">
+                                {/* Hero 区域 */}
+                                <div className="py-12 md:py-20 text-center space-y-6">
+                                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white drop-shadow-2xl">
+                                        Drunker <span className="text-indigo-500">醉语钟楼</span>
+                                    </h1>
+                                    <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-light">
+                                        探索、分享、体验。这里是原创钟楼剧本的聚集地。
+                                    </p>
+                                    
+                                    {/* 搜索框 - 更圆润，更平滑 */}
+                                    <div className="relative max-w-xl mx-auto mt-10 group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full opacity-20 group-hover:opacity-40 blur-xl transition-opacity duration-500"></div>
+                                        <input
+                                            type="text"
+                                            placeholder="搜索剧本或作者..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="relative w-full bg-[#1c1c1e] border border-white/10 rounded-full py-4 pl-14 pr-6 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 text-white placeholder-neutral-500 shadow-2xl transition-all"
+                                        />
+                                        <div className="absolute left-5 top-4 text-neutral-500"><Icons.Search /></div>
+                                    </div>
+                                </div>
+
+                                {/* 卡片网格 */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
+                                    {filteredScripts.map(script => (
+                                        <div key={script.id} onClick={() => goToDetails(script)} className="group bg-[#1c1c1e] rounded-3xl overflow-hidden cursor-pointer hover:bg-[#2c2c2e] transition-all duration-300 ring-1 ring-white/5 hover:ring-white/20 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/50 flex flex-col h-full">
+                                            {/* 图片区域 */}
+                                            <div className="relative h-60 bg-black overflow-hidden">
+                                                <img src={script.frontImgUrl} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-700" alt={script.title} />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1c1e] via-transparent to-transparent opacity-60"></div>
+                                                <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 text-xs font-medium text-white border border-white/10">
+                                                    <Icons.Star className="text-yellow-400 fill-yellow-400" size={12} />
+                                                    {script.ratingCount > 0 ? (script.ratingSum / script.ratingCount).toFixed(1) : 'New'}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* 内容区域 */}
+                                            <div className="p-6 flex-1 flex flex-col">
+                                                <h3 className="text-xl font-bold text-white mb-2 line-clamp-1">{script.title}</h3>
+                                                <p className="text-sm text-neutral-400 mb-4 flex items-center gap-2">
+                                                    <div className="w-5 h-5 rounded-full bg-neutral-700 flex items-center justify-center">
+                                                        <Icons.User size={10} />
+                                                    </div> 
+                                                    {script.author}
+                                                </p>
+                                                <div className="mt-auto flex justify-between items-center text-xs text-neutral-500 font-medium">
+                                                    <span className="flex items-center gap-1.5 bg-neutral-800/50 px-2 py-1 rounded-md"><Icons.Clock size={12} /> {script.updatedAt.toLocaleDateString()}</span>
+                                                    <span className="text-indigo-400 group-hover:translate-x-1 transition-transform">Details &rarr;</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'details' && selectedScript && (
+                            <div className="animate-fadeIn max-w-6xl mx-auto">
+                                <button onClick={goHome} className="group flex items-center text-neutral-400 hover:text-white mb-8 gap-2 transition-colors px-4 py-2 rounded-full hover:bg-white/5 w-fit">
+                                    <div className="bg-neutral-800 p-1.5 rounded-full group-hover:bg-neutral-700 transition-colors"><Icons.ArrowLeft size={16} /></div> 
+                                    <span className="font-medium">返回列表</span>
+                                </button>
+                                
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                    {/* 左侧：图片展示 */}
+                                    <div className="lg:col-span-7 space-y-6">
+                                        <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
+                                            <img src={selectedScript.frontImgUrl} className="w-full rounded-2xl" alt="Front" />
+                                        </div>
+                                        <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
+                                            <img src={selectedScript.backImgUrl} className="w-full rounded-2xl" alt="Back" />
+                                        </div>
+                                    </div>
+
+                                    {/* 右侧：信息与操作 */}
+                                    <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24 h-fit">
+                                        <div className="bg-[#1c1c1e] p-8 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                                            
+                                            <h1 className="text-3xl font-bold text-white mb-2 leading-tight">{selectedScript.title}</h1>
+                                            <p className="text-indigo-400 text-sm font-medium mb-8 flex items-center gap-2">
+                                                <span className="bg-indigo-500/10 px-2 py-1 rounded-md border border-indigo-500/20">作者</span> 
+                                                {selectedScript.author}
+                                            </p>
+                                            
+                                            <div className="space-y-3">
+                                                <button onClick={() => {
+                                                    const blob = new Blob([selectedScript.jsonContent], {type: 'application/json'});
+                                                    const url = URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = selectedScript.title + '.json';
+                                                    a.click();
+                                                }} className="w-full bg-white hover:bg-neutral-200 text-black py-4 rounded-2xl font-bold text-lg flex justify-center items-center gap-3 transition-colors shadow-lg shadow-white/5">
+                                                    <Icons.FileJson /> 下载 JSON 剧本
+                                                </button>
+                                                
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <a href={selectedScript.frontImgUrl} target="_blank" className="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white py-3 rounded-xl text-sm font-medium flex justify-center items-center gap-2 transition-colors border border-white/5">
+                                                        <Icons.Image size={16} /> 正面大图
+                                                    </a>
+                                                    <a href={selectedScript.backImgUrl} target="_blank" className="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white py-3 rounded-xl text-sm font-medium flex justify-center items-center gap-2 transition-colors border border-white/5">
+                                                        <Icons.Image size={16} /> 背面大图
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-[#1c1c1e] p-8 rounded-[2rem] border border-white/5 shadow-xl">
+                                            <h3 className="font-bold text-neutral-200 mb-3 flex items-center gap-2">
+                                                <Icons.Star className="text-yellow-500" /> 评价
+                                            </h3>
+                                            <p className="text-neutral-500 text-sm leading-relaxed">
+                                                Drunker 社区评价系统已就绪。<br/>
+                                                <span className="text-xs opacity-60">（连接数据库后即可查看真实玩家反馈）</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'upload' && (
+                            <div className="max-w-2xl mx-auto animate-fadeIn">
+                                <button onClick={goHome} className="flex items-center text-neutral-400 hover:text-white mb-6 gap-2 px-4"><Icons.ArrowLeft /> 取消</button>
+                                <div className="bg-[#1c1c1e] p-8 md:p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+                                    <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                                        <div className="bg-indigo-500/20 p-2 rounded-xl text-indigo-400"><Icons.BookOpen /></div>
+                                        发布新剧本
+                                    </h2>
+                                    <form onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const formData = new FormData(e.target);
+                                        handleUploadScript({
+                                            title: formData.get('title'),
+                                            author: formData.get('author'),
+                                            frontImgUrl: formData.get('frontImgUrl'),
+                                            backImgUrl: formData.get('backImgUrl'),
+                                            jsonContent: formData.get('jsonContent')
+                                        });
+                                    }} className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider ml-2">剧本名称</label>
+                                                <input name="title" required className="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider ml-2">作者</label>
+                                                <input name="author" required className="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider ml-2">正面图片 URL</label>
+                                            <input name="frontImgUrl" required className="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all font-mono text-sm" />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider ml-2">背面图片 URL</label>
+                                            <input name="backImgUrl" required className="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-white focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all font-mono text-sm" />
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider ml-2">JSON 内容</label>
+                                            <textarea name="jsonContent" required className="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-white font-mono text-xs h-32 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all resize-none"></textarea>
+                                        </div>
+
+                                        <div className="pt-4 flex justify-end gap-4">
+                                            <button type="submit" className="bg-white hover:bg-neutral-200 text-black px-8 py-3 rounded-full font-bold transition-all shadow-lg hover:shadow-white/20 transform hover:-translate-y-0.5">
+                                                立即发布
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                    
+                    <footer className="border-t border-white/5 mt-12 py-12 text-center">
+                        <p className="text-neutral-500 text-sm font-medium">© 2025 Drunker.online</p>
+                        <p className="text-neutral-600 text-xs mt-2">Designed for Blood on the Clocktower Community</p>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
