@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drunker - 醉语钟楼</title>
+    <title>Drunker - 欺诈游戏</title>
     <!-- 引入 Tailwind CSS (样式库) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 React 和 ReactDOM -->
@@ -16,8 +16,8 @@
         /* Apple 风格字体栈 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
-            background-color: #000000; /* 更深邃的黑，配合 Apple 暗黑模式 */
-            color: #f5f5f7; /* Apple 风格的近白文字 */
+            background-color: #000000;
+            color: #f5f5f7;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -47,7 +47,7 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
-        // --- 模拟图标组件 (SVG) ---
+        // --- 图标组件 (SVG) ---
         const Icons = {
             Ghost: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 22v-2"/><path d="M9 12a4 4 0 1 1 8 0v10"/><path d="M5 22v-2"/><path d="M5 12a8 8 0 0 1 16 0v10"/></svg>,
             Search: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
@@ -61,28 +61,188 @@
             BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         };
 
-        // --- 模拟数据 (Mock Data) ---
+        // --- 核心数据 (MOCK_SCRIPTS) ---
+        // 这里放入了《欺诈游戏》的完整数据
         const MOCK_SCRIPTS = [
             {
-                id: '1',
-                title: '暗流涌动 (Trouble Brewing)',
-                author: 'The Pandemonium Institute',
-                frontImgUrl: 'https://img.zcool.cn/community/01f09c5d1b11aca80121483788f47c.jpg@1280w_1l_2o_100sh.jpg',
-                backImgUrl: 'https://placehold.co/600x400/2a1b3d/e2e8f0?text=Back+Sheet',
-                jsonContent: '[{"id": "washerwoman"}]',
-                ratingSum: 45,
+                id: 'liar_game_001',
+                title: '欺诈游戏 (Liar Game)',
+                author: '小付',
+                // 正面使用封面图 (更具吸引力)
+                frontImgUrl: 'https://i.postimg.cc/N9Wgbjw3/Liargame-cover.png',
+                // 背面使用角色表 (内容详情)
+                backImgUrl: 'https://i.postimg.cc/wyS6Fjdr/Liargame.png',
+                // 完整的 JSON 内容，使用反引号 ` 包裹以支持多行和双引号
+                jsonContent: `[
+    {
+        "id": "_meta",
+        "name": "LiarGame",
+        "description": "",
+        "author": "小付",
+        "logo": "https://i.postimg.cc/DZqK2wHY/image.png",
+        "state": []
+    },
+    {
+        "id": "investigator"
+    },
+    {
+        "id": "empath"
+    },
+    {
+        "id": "chambermaid"
+    },
+    {
+        "id": "gambler"
+    },
+    {
+        "id": "gossip"
+    },
+    {
+        "id": "clockmaker"
+    },
+    {
+        "id": "flowergirl"
+    },
+    {
+        "id": "king"
+    },
+    {
+        "id": "atheist"
+    },
+    {
+        "id": "alsaahir"
+    },
+    {
+        "id": "daoshi"
+    },
+    {
+        "id": "fengshuishi"
+    },
+    {
+        "id": "zhifu"
+    },
+    {
+        "id": "saint"
+    },
+    {
+        "id": "lunatic"
+    },
+    {
+        "id": "hermit"
+    },
+    {
+        "id": "jiubao"
+    },
+    {
+        "id": "pit-hag"
+    },
+    {
+        "id": "goblin"
+    },
+    {
+        "id": "widow"
+    },
+    {
+        "id": "boffin"
+    },
+    {
+        "id": "fang_gu"
+    },
+    {
+        "id": "taotie"
+    },
+    {
+        "id": "diyRole1",
+        "name": "观察者",
+        "ability": "每局游戏限一次，在夜晚时*，你可以选择一名死亡玩家：如果他是善良的，你获得他的能力；如果他是邪恶的，你中毒。",
+        "team": "townsfolk",
+        "sch_team": "镇民",
+        "firstNight": "",
+        "otherNight": "401",
+        "firstNightReminder": "",
+        "otherNightReminder": "选择一个玩家，获得能力。类似主动限一次的食人族。",
+        "reminders": [
+            "已发动技能",
+            "中毒"
+        ],
+        "remindersGlobal": [
+            "是观察者"
+        ],
+        "setup": 0,
+        "image": "https://i.postimg.cc/tCF9X2Q4/image.png"
+    },
+    {
+        "id": "diyRole2",
+        "name": "腐蚀者",
+        "ability": "在你的首个夜晚，选择一名玩家，他可能被当做邪恶阵营和恶魔，即使他已死亡。\\n如果他是唯一存活的善良玩家，他转变为邪恶阵营（但他不知道）。",
+        "team": "minion",
+        "sch_team": "爪牙",
+        "firstNight": "4701",
+        "otherNight": "",
+        "firstNightReminder": "选择",
+        "otherNightReminder": "",
+        "reminders": [
+            "被腐蚀",
+            "邪恶"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/7hTQnsMG/by.png"
+    },
+    {
+        "id": "diyRole3",
+        "name": "检察官",
+        "ability": "如果你在白天发起过提名，当晚，你会得知一名与被提名者相同阵营的玩家。",
+        "team": "townsfolk",
+        "sch_team": "镇民",
+        "firstNight": "",
+        "otherNight": "10499",
+        "firstNightReminder": "",
+        "otherNightReminder": "得知",
+        "reminders": [
+            "提名",
+            "被查验"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/tCF9X2Q4/image.png"
+    },
+    {
+        "id": "diyRole4",
+        "name": "少数决",
+        "ability": "游戏的最后一天，改为得票最少的玩家被处决。",
+        "team": "fabled",
+        "sch_team": "传奇角色",
+        "firstNight": "",
+        "otherNight": "",
+        "firstNightReminder": "",
+        "otherNightReminder": "",
+        "reminders": [],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/RFvgHCqY/Y.png"
+    },
+    {
+        "id": "diyRole5",
+        "name": "谈判室",
+        "ability": "两名玩家可以自愿向说书人发起秘密交易。说书人受理后生效。违反交易的玩家会有不好的事情发生。\\n每局每名玩家限一次，恶魔不会因此受到惩罚。",
+        "team": "fabled",
+        "sch_team": "传奇角色",
+        "firstNight": "",
+        "otherNight": "",
+        "firstNightReminder": "",
+        "otherNightReminder": "",
+        "reminders": [
+            "谈判",
+            "惩罚"
+        ],
+        "remindersGlobal": [],
+        "setup": 0,
+        "image": "https://i.postimg.cc/sDMwSND3/image.png"
+    }
+]`,
+                ratingSum: 50, // 初始好评
                 ratingCount: 10,
-                updatedAt: new Date()
-            },
-            {
-                id: '2',
-                title: '紫罗兰教派 (Sects & Violets)',
-                author: '官方',
-                frontImgUrl: 'https://placehold.co/600x400/1c1c1e/e2e8f0?text=Sects+Violets',
-                backImgUrl: 'https://placehold.co/600x400/1c1c1e/e2e8f0?text=Back',
-                jsonContent: '[]',
-                ratingSum: 18,
-                ratingCount: 4,
                 updatedAt: new Date()
             }
         ];
@@ -121,7 +281,7 @@
 
             return (
                 <div className="min-h-screen bg-black text-[#f5f5f7] pb-12">
-                    {/* 导航栏 - 增加高斯模糊和透明度 */}
+                    {/* 导航栏 */}
                     <nav className="fixed top-0 w-full z-50 backdrop-blur-xl bg-black/70 border-b border-white/5 transition-all duration-300">
                         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                             <div className="flex items-center gap-3 cursor-pointer group" onClick={goHome}>
@@ -145,7 +305,7 @@
                         </div>
                     </nav>
 
-                    {/* 顶部占位，防止内容被导航栏遮挡 */}
+                    {/* 顶部占位 */}
                     <div className="h-20"></div>
 
                     {/* 主内容区 */}
@@ -161,7 +321,7 @@
                                         探索、分享、体验。这里是原创钟楼剧本的聚集地。
                                     </p>
                                     
-                                    {/* 搜索框 - 更圆润，更平滑 */}
+                                    {/* 搜索框 */}
                                     <div className="relative max-w-xl mx-auto mt-10 group">
                                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full opacity-20 group-hover:opacity-40 blur-xl transition-opacity duration-500"></div>
                                         <input
@@ -217,13 +377,19 @@
                                 </button>
                                 
                                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                    {/* 左侧：图片展示 */}
+                                    {/* 左侧：图片展示 (大图预览区) */}
                                     <div className="lg:col-span-7 space-y-6">
-                                        <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
-                                            <img src={selectedScript.frontImgUrl} className="w-full rounded-2xl" alt="Front" />
+                                        <div className="space-y-2">
+                                            <h4 className="text-sm text-neutral-500 font-bold uppercase ml-2">剧本封面</h4>
+                                            <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
+                                                <img src={selectedScript.frontImgUrl} className="w-full rounded-2xl" alt="封面" />
+                                            </div>
                                         </div>
-                                        <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
-                                            <img src={selectedScript.backImgUrl} className="w-full rounded-2xl" alt="Back" />
+                                        <div className="space-y-2">
+                                            <h4 className="text-sm text-neutral-500 font-bold uppercase ml-2">角色列表</h4>
+                                            <div className="bg-[#1c1c1e] rounded-3xl p-2 border border-white/5 shadow-2xl">
+                                                <img src={selectedScript.backImgUrl} className="w-full rounded-2xl" alt="角色表" />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -239,12 +405,20 @@
                                             </p>
                                             
                                             <div className="space-y-3">
+                                                {/* 下载 JSON 按钮 */}
                                                 <button onClick={() => {
                                                     const blob = new Blob([selectedScript.jsonContent], {type: 'application/json'});
                                                     const url = URL.createObjectURL(blob);
                                                     const a = document.createElement('a');
                                                     a.href = url;
-                                                    a.download = selectedScript.title + '.json';
+                                                    a.download = selectedScript.name ? `${selectedScript.name}.json` : 'script.json';
+                                                    // 尝试解析 JSON 获取名字，失败则用标题
+                                                    try {
+                                                        const json = JSON.parse(selectedScript.jsonContent);
+                                                        const meta = json.find(i => i.id === "_meta");
+                                                        if(meta && meta.name) a.download = meta.name + ".json";
+                                                    } catch(e) {}
+                                                    
                                                     a.click();
                                                 }} className="w-full bg-white hover:bg-neutral-200 text-black py-4 rounded-2xl font-bold text-lg flex justify-center items-center gap-3 transition-colors shadow-lg shadow-white/5">
                                                     <Icons.FileJson /> 下载 JSON 剧本
@@ -252,10 +426,10 @@
                                                 
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <a href={selectedScript.frontImgUrl} target="_blank" className="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white py-3 rounded-xl text-sm font-medium flex justify-center items-center gap-2 transition-colors border border-white/5">
-                                                        <Icons.Image size={16} /> 正面大图
+                                                        <Icons.Image size={16} /> 封面大图
                                                     </a>
                                                     <a href={selectedScript.backImgUrl} target="_blank" className="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white py-3 rounded-xl text-sm font-medium flex justify-center items-center gap-2 transition-colors border border-white/5">
-                                                        <Icons.Image size={16} /> 背面大图
+                                                        <Icons.Image size={16} /> 角色表大图
                                                     </a>
                                                 </div>
                                             </div>
@@ -263,11 +437,11 @@
 
                                         <div className="bg-[#1c1c1e] p-8 rounded-[2rem] border border-white/5 shadow-xl">
                                             <h3 className="font-bold text-neutral-200 mb-3 flex items-center gap-2">
-                                                <Icons.Star className="text-yellow-500" /> 评价
+                                                <Icons.Star className="text-yellow-500" /> 关于剧本
                                             </h3>
-                                            <p className="text-neutral-500 text-sm leading-relaxed">
-                                                Drunker 社区评价系统已就绪。<br/>
-                                                <span className="text-xs opacity-60">（连接数据库后即可查看真实玩家反馈）</span>
+                                            <p className="text-neutral-400 text-sm leading-relaxed">
+                                                本剧本包含自定义角色（DIY）：观察者、腐蚀者、检察官、少数决、谈判室等。<br/><br/>
+                                                <span className="text-xs opacity-60">点击上方白色按钮即可下载包含这些角色的完整 JSON 文件，导入魔典即可使用。</span>
                                             </p>
                                         </div>
                                     </div>
